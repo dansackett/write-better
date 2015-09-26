@@ -19,6 +19,8 @@ var processors Processor = ActiveProcessors{
 
 func main() {
 	http.Handle("/", &templateHandler{filename: "index.html"})
+	http.HandleFunc("/upload", uploaderHandler)
+	http.HandleFunc("/paste", pasteHandler)
 	http.HandleFunc("/process", processorsHandler)
 
 	fmt.Println("App server running on :8080")
