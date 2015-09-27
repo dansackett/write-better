@@ -5,6 +5,28 @@ import (
 	"bytes"
 )
 
+// Match represents an actual matched result after processing
+type Match struct {
+	// Match is the actual word / phrase that matches
+	Match string
+	// Label is the type of processor
+	Label string
+	// Indices are the start and end points of the match
+	Indices []int
+	// Message is the message from the processor
+	Message string
+}
+
+// NewMatch is a convenience function to build a new Match instance
+func NewMatch(match string, label string, indices []int, msg string) *Match {
+	return &Match{
+		Match:   match,
+		Label:   label,
+		Indices: indices,
+		Message: msg,
+	}
+}
+
 // Chunk is a piece of data created from the Chunker
 type Chunk struct {
 	// Index refers to the order of the Chunk
@@ -14,24 +36,20 @@ type Chunk struct {
 	// FirstWord saves the first word of the text for analysis
 	FirstWord string
 	// Messages store the helpful messages returned from processors
-	Messages []string
-	// Errors store errors that have occurred
-	Errors []string
+	Matches []*Match
 	// Score refers to the overall score of this Chunk
 	Score int
 }
 
 // NewChunk is a convenience function to build a new Chunk instance
 func NewChunk(idx int, data string) *Chunk {
-	var messages []string
-	var errors []string
+	var matches []*Match
 
 	return &Chunk{
 		Index:     idx,
 		Data:      data,
 		FirstWord: "",
-		Messages:  messages,
-		Errors:    errors,
+		Matches:   matches,
 		Score:     0,
 	}
 }

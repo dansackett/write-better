@@ -85,11 +85,12 @@ func processorsHandler(w http.ResponseWriter, r *http.Request) {
 // doTextProcessor is a convenience function to make this more DRY. It runs
 // the processors from go-text-processors giving the same treatment to each
 // processor.
-func doTextProcessor(p proc.TextProcessor, c *Chunk, msg string) *Chunk {
+func doTextProcessor(p proc.TextProcessor, label string, c *Chunk, msg string) *Chunk {
 	res := p.Run(c.Data)
 
 	for _, match := range res.Matches {
-		c.Messages = append(c.Messages, fmt.Sprintf(msg, match.Match, match.Indices[0], match.Indices[1]))
+		formattedMsg := fmt.Sprintf(msg, match.Match)
+		c.Matches = append(c.Matches, NewMatch(match.Match, label, match.Indices, formattedMsg))
 		c.Score += 1
 	}
 
@@ -104,8 +105,8 @@ var UsePassiveVoiceProcessor PassiveVoiceProcessor
 
 // Process handles the processing for passive voice matches
 func (_ PassiveVoiceProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" located between indexes [%d %d] is considered passive voice. Consider changing it."
-	return doTextProcessor(proc.PassiveVoiceProcessor(), c, msg)
+	msg := "\"%s\" is considered passive voice."
+	return doTextProcessor(proc.PassiveVoiceProcessor(), "passive", c, msg)
 }
 
 // WeaselWordProcessor is an empty struct for processing weasel words
@@ -116,8 +117,8 @@ var UseWeaselWordProcessor WeaselWordProcessor
 
 // Process handles the processing for weasel word matches
 func (_ WeaselWordProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" located between indexes [%d %d] is considered a weasel word. Consider changing it."
-	return doTextProcessor(proc.WeaselWordProcessor(), c, msg)
+	msg := "\"%s\" is considered a weasel word."
+	return doTextProcessor(proc.WeaselWordProcessor(), "weasel", c, msg)
 }
 
 // TooWordyProcessor is an empty struct for processing wordy phrases
@@ -128,8 +129,8 @@ var UseTooWordyProcessor TooWordyProcessor
 
 // Process handles the processing for wordy phrase matches
 func (_ TooWordyProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" located between indexes [%d %d] is considered a wordy phrase. Consider changing it."
-	return doTextProcessor(proc.TooWordyProcessor(), c, msg)
+	msg := "\"%s\" is considered a wordy phrase."
+	return doTextProcessor(proc.TooWordyProcessor(), "wordy", c, msg)
 }
 
 // AdverbProcessor is an empty struct for processing adverbs
@@ -140,8 +141,8 @@ var UseAdverbProcessor AdverbProcessor
 
 // Process handles the processing for adverb matches
 func (_ AdverbProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" located between indexes [%d %d] is an adverb. Consider changing it."
-	return doTextProcessor(proc.AdverbProcessor(), c, msg)
+	msg := "\"%s\" is an adverb."
+	return doTextProcessor(proc.AdverbProcessor(), "adverb", c, msg)
 }
 
 // ClicheProcessor is an empty struct for processing cliches
@@ -152,8 +153,8 @@ var UseClicheProcessor ClicheProcessor
 
 // Process handles the processing for cliche matches
 func (_ ClicheProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" located between indexes [%d %d] is a cliche. Consider changing it."
-	return doTextProcessor(proc.ClicheProcessor(), c, msg)
+	msg := "\"%s\" is a cliche."
+	return doTextProcessor(proc.ClicheProcessor(), "cliche", c, msg)
 }
 
 // LexicalIllusionProcessor is an empty struct for processing repeated words
@@ -164,8 +165,8 @@ var UseLexicalIllusionProcessor LexicalIllusionProcessor
 
 // Process handles the processing for repeated word matches
 func (_ LexicalIllusionProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" located between indexes [%d %d] is a repeated word. Consider changing it."
-	return doTextProcessor(proc.LexicalIllusionProcessor(), c, msg)
+	msg := "\"%s\" a repeated word."
+	return doTextProcessor(proc.LexicalIllusionProcessor(), "lexical_illusion", c, msg)
 }
 
 // SentenceLengthProcessor is an empty struct for processing a sentence's length
@@ -176,13 +177,15 @@ var UseSentenceLengthProcessor SentenceLengthProcessor
 
 // Process handles the processing for long sentence matches
 func (_ SentenceLengthProcessor) Process(c *Chunk) *Chunk {
+	var indices []int
+
 	if len(c.Data) > 160 {
-		msg := fmt.Sprintf("This is a VERY long sentence. Consider changing it.")
-		c.Messages = append(c.Messages, msg)
+		msg := fmt.Sprintf("This is a VERY long sentence.")
+		c.Matches = append(c.Matches, NewMatch("", "length", indices, msg))
 		c.Score += 1
 	} else if len(c.Data) > 130 {
-		msg := fmt.Sprintf("This is a long sentence. Consider changing it.")
-		c.Messages = append(c.Messages, msg)
+		msg := fmt.Sprintf("This is a long sentence.")
+		c.Matches = append(c.Matches, NewMatch("", "length", indices, msg))
 		c.Score += 1
 	}
 
@@ -198,10 +201,11 @@ var UseStartsWithProcessor StartsWithProcessor
 // Process handles the processing for first phrase matches
 func (_ StartsWithProcessor) Process(c *Chunk) *Chunk {
 	// @TODO Check if it starts with "there is" or "there are"
+	var indices []int
 
 	if strings.ToLower(c.Data) == "so" {
 		msg := fmt.Sprintf("This sentence starts with so. Consider changing it.")
-		c.Messages = append(c.Messages, msg)
+		c.Matches = append(c.Matches, NewMatch("", "length", indices, msg))
 		c.Score += 1
 	}
 
