@@ -30,6 +30,8 @@ This will stop the daemon and remove the container.
 - [X] Implement processors
 - [X] Setup HTTP router to serve an application
 - [X] Build handlers for templates, uploads, results
+- [X] Update processors response to give JS ability to highlight index matches
+- [ ] Build frontend text parser to highlight matches
+- [ ] Add popovers in frontend for messages with colors matching processor types
+- [ ] Finalize a website design
 - [ ] Write tests
-- [ ] Update processors response to give JS ability to highlight index matches
-- [ ] Implement websockets for nice experience

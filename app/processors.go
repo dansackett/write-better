@@ -34,11 +34,10 @@ func (p ActiveProcessors) Process(c *Chunk) *Chunk {
 
 // processorsHandler chunks and processes text
 func processorsHandler(w http.ResponseWriter, r *http.Request) {
-	text, err := r.Cookie("appText")
-
-	data, err := base64.StdEncoding.DecodeString(text.Value)
+	data, err := getCookie(r, "appText")
 	if err != nil {
-		// @TODO handle error
+		io.WriteString(w, err.Error())
+		return
 	}
 
 	var wg sync.WaitGroup

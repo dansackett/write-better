@@ -12,14 +12,37 @@
 
             <hr />
 
-            {{ range $key, $value := . }}
-                {{ range $message := $value.Messages }}
-                    {{ $message }}
-                {{ end }}
-            {{ end }}
-
+            <p><strong>Score:</strong> {{.score}}</p>
+            <p class="full-text">{{.fullText}}</p>
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            // Enhance strings to have a new function to replace a substring
+            // between two indices. This allows replacement inline.
+            String.prototype.replaceBetween = function(start, end, what) {
+                return this.substring(0, start) + what + this.substring(end);
+            };
+        </script>
+        <script type="text/javascript">
+            $(function(){
+                var chunks = {{.json}};
+                var $fullText = $('.full-text').eq(0);
+
+                $.each(chunks, function(index, chunk) {
+                    if (chunk.Matches.length > 0) {
+                        $.each(chunk.Matches, function(index, match) {
+                            if (match.Indices.length > 0) {
+                                var str = '<strong class="type-' + match.Label + '">' + match.Match + '</strong>';
+                                $fullText.html($fullText.text().replaceBetween(match.Indices[0], match.Indices[1], str));
+                            }
+                            else {
+                                // Handle cases where we don't have indices
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
     </body>
 </html>
