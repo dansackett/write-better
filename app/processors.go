@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	proc "github.com/dansackett/go-text-processors"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -57,17 +59,27 @@ func processorsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait for the processing to finish
 	wg.Wait()
 
-	// @TODO create result cookie
-
-	// @DEBUG just to see we have things working
-	for _, chunk := range chunks {
-		for _, msg := range chunk.Messages {
-			io.WriteString(w, msg)
-		}
+	// Format chunks map to be JSONified
+	formattedChunks := make(map[string]*Chunk)
+	for idx, chunk := range chunks {
+		formattedChunks[strconv.Itoa(idx)] = chunk
 	}
 
-	// w.Header().Set("Location", "/results")
-	// w.WriteHeader(http.StatusTemporaryRedirect)
+	jsonChunks, err := json.Marshal(formattedChunks)
+
+	if err != nil {
+		io.WriteString(w, err.Error())
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:  "appResult",
+		Value: base64.StdEncoding.EncodeToString(jsonChunks),
+		Path:  "/results",
+	})
+
+	w.Header().Set("Location", "/results")
+	w.WriteHeader(http.StatusTemporaryRedirect)
 }
 
 // doTextProcessor is a convenience function to make this more DRY. It runs

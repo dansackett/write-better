@@ -22,6 +22,7 @@ func main() {
 	http.HandleFunc("/upload", uploaderHandler)
 	http.HandleFunc("/paste", pasteHandler)
 	http.HandleFunc("/process", processorsHandler)
+	http.HandleFunc("/results", resultHandler)
 
 	fmt.Println("App server running on :8080")
 
