@@ -149,7 +149,7 @@ var UseSentenceLengthProcessor SentenceLengthProcessor
 
 // Process handles the processing for long sentence matches
 func (_ SentenceLengthProcessor) Process(c *Chunk) *Chunk {
-	indices := []int{0, len(c.Data)}
+	var indices []int
 
 	if len(c.Data) > 160 {
 		msg := fmt.Sprintf("This is a VERY long sentence.")
@@ -195,8 +195,13 @@ func (_ HTMLProcessor) Process(c *Chunk) *Chunk {
 
 	if len(c.Matches) > 0 {
 		for _, match := range c.Matches {
-			nodes[match.Indices[0]].AddBefore(SpanTag(match.Label, match.Message))
-			nodes[match.Indices[1]-1].AddAfter(EndSpanTag())
+			if len(match.Indices) == 0 {
+				nodes[0].AddBefore(SpanTag(match.Label, match.Message))
+				nodes[len(nodes)-1].AddAfter(EndSpanTag())
+			} else {
+				nodes[match.Indices[0]].AddBefore(SpanTag(match.Label, match.Message))
+				nodes[match.Indices[1]-1].AddAfter(EndSpanTag())
+			}
 		}
 	}
 
