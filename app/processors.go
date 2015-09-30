@@ -1,13 +1,9 @@
 package main
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	proc "github.com/dansackett/go-text-processors"
-	"io"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 )
@@ -34,16 +30,10 @@ func (p ActiveProcessors) Process(c *Chunk) *Chunk {
 
 // processorsHandler chunks and processes text
 func processorsHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := getCookie(r, "appText")
-	if err != nil {
-		io.WriteString(w, err.Error())
-		return
-	}
-
 	var wg sync.WaitGroup
 
 	// Chunk the text into sentences
-	c := NewSentenceChunker(string(data))
+	c := NewSentenceChunker(appText)
 	chunks, _ := c.Chunk()
 
 	// Send each chunk into a gorountine to process
@@ -58,24 +48,7 @@ func processorsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait for the processing to finish
 	wg.Wait()
 
-	// Format chunks map to be JSONified
-	formattedChunks := make(map[string]*Chunk)
-	for idx, chunk := range chunks {
-		formattedChunks[strconv.Itoa(idx)] = chunk
-	}
-
-	jsonChunks, err := json.Marshal(formattedChunks)
-
-	if err != nil {
-		io.WriteString(w, err.Error())
-		return
-	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:  "appResult",
-		Value: base64.StdEncoding.EncodeToString(jsonChunks),
-		Path:  "/results",
-	})
+	appResult = chunks
 
 	w.Header().Set("Location", "/results")
 	w.WriteHeader(http.StatusTemporaryRedirect)

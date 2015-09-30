@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"net/http"
 )
 
@@ -10,11 +9,7 @@ import (
 func pasteHandler(w http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
 
-	http.SetCookie(w, &http.Cookie{
-		Name:  "appText",
-		Value: base64.StdEncoding.EncodeToString([]byte(req.Form.Get("textFile"))),
-		Path:  "/",
-	})
+	appText = string(req.Form.Get("textFile"))
 
 	w.Header().Set("Location", "/process")
 	w.WriteHeader(http.StatusTemporaryRedirect)

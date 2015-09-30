@@ -1,14 +1,12 @@
 package main
 
 import (
-	"encoding/base64"
 	"io"
 	"io/ioutil"
 	"net/http"
 )
 
-// pasteHandler reads POST data from the file field and sets it in a cookie
-// for the processor to take over.
+// uploadHandler reads POST data from the file field and sets it in the app
 func uploaderHandler(w http.ResponseWriter, req *http.Request) {
 	// Use io.Reader type of req.FormFile to read the file and headers
 	file, _, err := req.FormFile("textFile")
@@ -24,11 +22,7 @@ func uploaderHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:  "appText",
-		Value: base64.StdEncoding.EncodeToString(data),
-		Path:  "/",
-	})
+	appText = string(data)
 
 	w.Header().Set("Location", "/process")
 	w.WriteHeader(http.StatusTemporaryRedirect)

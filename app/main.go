@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+// processors refer to the list of active processors we are running in the
+// application at any given time
 var processors Processor = ActiveProcessors{
 	UsePassiveVoiceProcessor,
 	UseWeaselWordProcessor,
@@ -18,6 +20,12 @@ var processors Processor = ActiveProcessors{
 	// This needs to be the last one since it manipuates the string itself
 	UseHTMLProcessor,
 }
+
+// appText refers to the text that has been submitted
+var appText string
+
+// appResult refers to the processing results
+var appResult Chunks
 
 func main() {
 	http.Handle("/", &templateHandler{filename: "index.html"})
