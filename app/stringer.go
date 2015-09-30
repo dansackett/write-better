@@ -51,12 +51,19 @@ func (nodes CharNodes) ToString() string {
 func ToCharNodes(s string) CharNodes {
 	var nodes CharNodes
 	var emptyStrList []string
-	chars := strings.Split(s, "")
+	chars := []byte(s)
+
+	// @TODO I have learned that when you split a string, there is a mismatch
+	// when using strings.Split because of bytes vs string. Because of this,
+	// I'm now casting the characters to bytes to get the correct number of
+	// characters (so indices match up) but when converting back to a string
+	// in building a CharNode, apostrophes (') are not encoded correctly. This
+	// needs to be solved.
 
 	for i, char := range chars {
 		nodes = append(nodes, &CharNode{
 			Index:  i,
-			Char:   char,
+			Char:   string(char),
 			Before: emptyStrList,
 			After:  emptyStrList,
 		})
