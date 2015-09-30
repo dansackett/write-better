@@ -2,6 +2,16 @@
     <head>
         <title>Write Better</title>
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <style>
+            .type-passive       { background-color: rgba(215, 44, 44, .5) }
+            .type-weasel        { background-color: rgba(146, 96, 44, .5) }
+            .type-wordy         { background-color: rgba(146, 204, 44, .5) }
+            .type-adverb        { background-color: rgba(32, 204, 133, .5) }
+            .type-cliche        { background-color: rgba(32, 105, 0, .5) }
+            .type-illusion      { background-color: rgba(199, 105, 0, .5) }
+            .type-length        { background-color: rgba(199, 142, 37, .5) }
+            .type-startswith    { background-color: rgba(255, 0, 37, .5) }
+        </style>
     </head>
     <body>
         <div class="container">
@@ -17,32 +27,6 @@
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script type="text/javascript">
-            // Enhance strings to have a new function to replace a substring
-            // between two indices. This allows replacement inline.
-            String.prototype.replaceBetween = function(start, end, what) {
-                return this.substring(0, start) + what + this.substring(end);
-            };
-        </script>
-        <script type="text/javascript">
-            $(function(){
-                var chunks = {{.json}};
-                var $fullText = $('.full-text').eq(0);
-
-                $.each(chunks, function(index, chunk) {
-                    if (chunk.Matches.length > 0) {
-                        $.each(chunk.Matches, function(index, match) {
-                            if (match.Indices.length > 0) {
-                                var str = '<strong class="type-' + match.Label + '">' + match.Match + '</strong>';
-                                $fullText.html($fullText.text().replaceBetween(match.Indices[0], match.Indices[1], str));
-                            }
-                            else {
-                                // Handle cases where we don't have indices
-                            }
-                        });
-                    }
-                });
-            });
-        </script>
+        <script type="text/javascript"></script>
     </body>
 </html>

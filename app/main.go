@@ -15,6 +15,8 @@ var processors Processor = ActiveProcessors{
 	UseLexicalIllusionProcessor,
 	UseSentenceLengthProcessor,
 	UseStartsWithProcessor,
+	// This needs to be the last one since it manipuates the string itself
+	UseHTMLProcessor,
 }
 
 func main() {

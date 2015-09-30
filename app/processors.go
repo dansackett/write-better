@@ -88,7 +88,7 @@ func doTextProcessor(p proc.TextProcessor, label string, c *Chunk, msg string) *
 	res := p.Run(c.Data)
 
 	for _, match := range res.Matches {
-		formattedMsg := fmt.Sprintf(msg, match.Match)
+		formattedMsg := fmt.Sprintf(msg)
 		c.Matches = append(c.Matches, NewMatch(match.Match, label, match.Indices, formattedMsg))
 		c.Score += 1
 	}
@@ -104,7 +104,7 @@ var UsePassiveVoiceProcessor PassiveVoiceProcessor
 
 // Process handles the processing for passive voice matches
 func (_ PassiveVoiceProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" is considered passive voice."
+	msg := "This is considered passive voice."
 	return doTextProcessor(proc.PassiveVoiceProcessor(), "passive", c, msg)
 }
 
@@ -116,7 +116,7 @@ var UseWeaselWordProcessor WeaselWordProcessor
 
 // Process handles the processing for weasel word matches
 func (_ WeaselWordProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" is considered a weasel word."
+	msg := "This is considered a weasel word."
 	return doTextProcessor(proc.WeaselWordProcessor(), "weasel", c, msg)
 }
 
@@ -128,7 +128,7 @@ var UseTooWordyProcessor TooWordyProcessor
 
 // Process handles the processing for wordy phrase matches
 func (_ TooWordyProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" is considered a wordy phrase."
+	msg := "This is considered a wordy phrase."
 	return doTextProcessor(proc.TooWordyProcessor(), "wordy", c, msg)
 }
 
@@ -140,7 +140,7 @@ var UseAdverbProcessor AdverbProcessor
 
 // Process handles the processing for adverb matches
 func (_ AdverbProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" is an adverb."
+	msg := "This is an adverb."
 	return doTextProcessor(proc.AdverbProcessor(), "adverb", c, msg)
 }
 
@@ -152,7 +152,7 @@ var UseClicheProcessor ClicheProcessor
 
 // Process handles the processing for cliche matches
 func (_ ClicheProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" is a cliche."
+	msg := "This is a cliche."
 	return doTextProcessor(proc.ClicheProcessor(), "cliche", c, msg)
 }
 
@@ -164,8 +164,8 @@ var UseLexicalIllusionProcessor LexicalIllusionProcessor
 
 // Process handles the processing for repeated word matches
 func (_ LexicalIllusionProcessor) Process(c *Chunk) *Chunk {
-	msg := "\"%s\" a repeated word."
-	return doTextProcessor(proc.LexicalIllusionProcessor(), "lexical_illusion", c, msg)
+	msg := "This a repeated word."
+	return doTextProcessor(proc.LexicalIllusionProcessor(), "illusion", c, msg)
 }
 
 // SentenceLengthProcessor is an empty struct for processing a sentence's length
@@ -176,7 +176,7 @@ var UseSentenceLengthProcessor SentenceLengthProcessor
 
 // Process handles the processing for long sentence matches
 func (_ SentenceLengthProcessor) Process(c *Chunk) *Chunk {
-	var indices []int
+	indices := []int{0, len(c.Data)}
 
 	if len(c.Data) > 160 {
 		msg := fmt.Sprintf("This is a VERY long sentence.")
@@ -200,13 +200,34 @@ var UseStartsWithProcessor StartsWithProcessor
 // Process handles the processing for first phrase matches
 func (_ StartsWithProcessor) Process(c *Chunk) *Chunk {
 	// @TODO Check if it starts with "there is" or "there are"
-	var indices []int
-
-	if strings.ToLower(c.Data) == "so" {
+	if strings.ToLower(c.FirstWord) == "so" {
+		indices := []int{0, 2}
 		msg := fmt.Sprintf("This sentence starts with so. Consider changing it.")
-		c.Matches = append(c.Matches, NewMatch("", "length", indices, msg))
+		c.Matches = append(c.Matches, NewMatch("", "startswith", indices, msg))
 		c.Score += 1
 	}
+
+	return c
+}
+
+// HTMLProcessor applies HTML tags to the sentence for the frontend
+type HTMLProcessor struct{}
+
+// UseHTMLProcessor is a convenience variable for referencing a HTMLProcessor
+var UseHTMLProcessor HTMLProcessor
+
+// Process applies the HTML tags to the string
+func (_ HTMLProcessor) Process(c *Chunk) *Chunk {
+	nodes := ToCharNodes(c.Data)
+
+	if len(c.Matches) > 0 {
+		for _, match := range c.Matches {
+			nodes[match.Indices[0]].AddBefore(SpanTag(match.Label, match.Message))
+			nodes[match.Indices[1]-1].AddAfter(EndSpanTag())
+		}
+	}
+
+	c.Data = nodes.ToString()
 
 	return c
 }

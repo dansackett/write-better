@@ -5,13 +5,18 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
 	"text/template"
 )
 
 // resultHandler reads the result cookie, parses it, and gets it ready to be
 // used in a template to show users how their text finishes.
 func resultHandler(w http.ResponseWriter, req *http.Request) {
+	var fullText []string
 	chunks := make(map[string]*Chunk)
+	formattedChunks := make(Chunks)
 
 	// Get Result data
 	data, err := getCookie(req, "appResult")
@@ -27,16 +32,21 @@ func resultHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Get fullText used for parsing
-	fullText, err := getCookie(req, "appText")
-	if err != nil {
-		io.WriteString(w, err.Error())
-		return
+	// Convert chunks into their real look so we can sort them
+	for i, chunk := range chunks {
+		intIndex, _ := strconv.Atoi(i)
+		formattedChunks[intIndex] = chunk
+	}
+
+	sort.Sort(formattedChunks)
+
+	for _, chunk := range formattedChunks {
+		fullText = append(fullText, chunk.Data)
 	}
 
 	// Build data for the template
 	returnData := map[string]interface{}{
-		"fullText": string(fullText),
+		"fullText": strings.Join(fullText, ""),
 		"json":     string(data),
 	}
 

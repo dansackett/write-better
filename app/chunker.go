@@ -54,11 +54,18 @@ func NewChunk(idx int, data string) *Chunk {
 	}
 }
 
+// Chunks is a simple way to references data that has been split but a chunker
+type Chunks map[int]*Chunk
+
+func (c Chunks) Len() int           { return len(c) }
+func (c Chunks) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
+func (c Chunks) Less(i, j int) bool { return c[i].Index < c[j].Index }
+
 // Chunker provides a skeleton for objects which can split data into smaller chunks of data
 type Chunker interface {
 	// Chunk takes in data and returns that data split into digestible
 	// poritions to use for parallel processing
-	Chunk() (map[int]*Chunk, error)
+	Chunk() (Chunks, error)
 }
 
 // SentenceChunker is a Chunker instance which splits a string by sentences
@@ -73,7 +80,7 @@ func NewSentenceChunker(input string) *SentenceChunker {
 }
 
 // SentenceChunker takes the passed in input and splits it by sentences
-func (c SentenceChunker) Chunk() (map[int]*Chunk, error) {
+func (c SentenceChunker) Chunk() (Chunks, error) {
 	result := make(map[int]*Chunk)
 
 	s := bufio.NewScanner(bytes.NewBufferString(c.Input))
