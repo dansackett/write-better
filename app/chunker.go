@@ -54,12 +54,15 @@ func NewChunk(idx int, data string) *Chunk {
 	}
 }
 
-// Chunks is a simple way to references data that has been split but a chunker
-type Chunks map[int]*Chunk
+// Chunks is a simple way to reference data that has been split by a chunker
+type Chunks []*Chunk
 
-func (c Chunks) Len() int           { return len(c) }
-func (c Chunks) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
-func (c Chunks) Less(i, j int) bool { return c[i].Index < c[j].Index }
+// ByChunk is a sorting mechanism for sorting a slice of chunks
+type ByChunk []*Chunk
+
+func (c ByChunk) Len() int           { return len(c) }
+func (c ByChunk) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
+func (c ByChunk) Less(i, j int) bool { return c[i].Index < c[j].Index }
 
 // Chunker provides a skeleton for objects which can split data into smaller chunks of data
 type Chunker interface {
@@ -81,7 +84,8 @@ func NewSentenceChunker(input string) *SentenceChunker {
 
 // SentenceChunker takes the passed in input and splits it by sentences
 func (c SentenceChunker) Chunk() (Chunks, error) {
-	result := make(map[int]*Chunk)
+	var result Chunks
+	tmp := make(map[int]*Chunk)
 
 	s := bufio.NewScanner(bytes.NewBufferString(c.Input))
 
@@ -89,17 +93,17 @@ func (c SentenceChunker) Chunk() (Chunks, error) {
 	firstWord := ""
 	for s.Scan() {
 		for _, r := range s.Text() {
-			if result[index] == nil {
-				result[index] = NewChunk(index, "")
+			if tmp[index] == nil {
+				tmp[index] = NewChunk(index, "")
 			}
 
-			result[index].Data += string(r)
+			tmp[index].Data += string(r)
 
-			if result[index].FirstWord == "" {
+			if tmp[index].FirstWord == "" {
 				if IsAlphaNumeric(r) {
 					firstWord += string(r)
 				} else {
-					result[index].FirstWord = firstWord
+					tmp[index].FirstWord = firstWord
 					firstWord = ""
 				}
 			}
@@ -108,6 +112,11 @@ func (c SentenceChunker) Chunk() (Chunks, error) {
 				continue
 			}
 		}
+	}
+
+	// Assign chunks
+	for _, chunk := range tmp {
+		result = append(result, chunk)
 	}
 
 	return result, nil
