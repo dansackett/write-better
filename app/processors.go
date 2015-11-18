@@ -197,11 +197,11 @@ func (_ HTMLProcessor) Process(c *Chunk) *Chunk {
 	if len(c.Matches) > 0 {
 		for _, match := range c.Matches {
 			if len(match.Indices) == 0 {
-				nodes[0].AddBefore(SpanTag(match.Label, match.Message))
-				nodes[len(nodes)-1].AddAfter(EndSpanTag())
+				nodes[0].AddBefore(AnchorTag(match.Label, match.Message))
+				nodes[len(nodes)-1].AddAfter(EndAnchorTag())
 			} else {
-				nodes[match.Indices[0]].AddBefore(SpanTag(match.Label, match.Message))
-				nodes[match.Indices[1]-1].AddAfter(EndSpanTag())
+				nodes[match.Indices[0]].AddBefore(AnchorTag(match.Label, match.Message))
+				nodes[match.Indices[1]-1].AddAfter(EndAnchorTag())
 			}
 		}
 	}

@@ -3,6 +3,8 @@
         <title>Write Better</title>
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
         <style>
+            .match              { text-decoration: none; color: #000; }
+            .match:hover        { text-decoration: none; color: #000; cursor: default; }
             .type-passive       { background-color: rgba(215, 44, 44, .5) }
             .type-weasel        { background-color: rgba(146, 96, 44, .5) }
             .type-wordy         { background-color: rgba(146, 204, 44, .5) }
@@ -27,6 +29,9 @@
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script type="text/javascript"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            $('.match').tooltip();
+        </script>
     </body>
 </html>
