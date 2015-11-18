@@ -32,6 +32,6 @@ This will stop the daemon and remove the container.
 - [X] Build handlers for templates, uploads, results
 - [X] Update processors response to give JS ability to highlight index matches
 - [X] Build text parser to highlight matches
-- [ ] Add popovers in frontend for messages with colors matching processor types
+- [X] Add popovers in frontend for messages with colors matching processor types
 - [ ] Finalize a website design
 - [ ] Write tests
