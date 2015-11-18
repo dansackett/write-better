@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	proc "github.com/dansackett/go-text-processors"
 	"net/http"
 	"strings"
 	"sync"
+
+	proc "github.com/dansackett/go-text-processors"
 )
 
 // Processor is an interface which handles processing of a Chunk.

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -21,6 +22,9 @@ func uploaderHandler(w http.ResponseWriter, req *http.Request) {
 		io.WriteString(w, err.Error())
 		return
 	}
+
+	// This is hackish as it replaces a character I am having difficulty with.
+	data = bytes.Replace([]byte(data), []byte("’"), []byte("'"), -1)
 
 	appText = string(data)
 
