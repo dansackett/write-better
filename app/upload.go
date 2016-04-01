@@ -1,10 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	unidecode "github.com/rainycape/unidecode"
 )
 
 // uploadHandler reads POST data from the file field and sets it in the app
@@ -23,13 +24,7 @@ func uploaderHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// This is hackish as it replaces a character I am having difficulty with.
-	data = bytes.Replace([]byte(data), []byte("’"), []byte("'"), -1)
-	data = bytes.Replace([]byte(data), []byte("‘"), []byte("'"), -1)
-	data = bytes.Replace([]byte(data), []byte("“"), []byte("\""), -1)
-	data = bytes.Replace([]byte(data), []byte("”"), []byte("\""), -1)
-
-	appText = string(data)
+	appText = unidecode.Unidecode(string(data))
 
 	w.Header().Set("Location", "/process")
 	w.WriteHeader(http.StatusTemporaryRedirect)
