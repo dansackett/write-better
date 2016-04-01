@@ -1,50 +1,124 @@
 <html>
     <head>
         <title>Write Better</title>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css">
+        <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css">
     </head>
     <body>
         <div class="container">
-            <h1 class="page-title">
-                Write Better <small>Get suggestions about your writing</small>
-            </h1>
-            <p>This is an application which allows you to check your writing against common pitfalls.</p>
+            <div class="header clearfix">
+                <nav>
+                    <ul class="nav nav-pills pull-right">
+                        <li role="presentation" class="active"><a href="/">Home</a></li>
+                    </ul>
+                </nav>
+                <h3 class="text-muted">Write<strong>Better</strong></h3>
+            </div>
 
-            <hr />
+            <div class="jumbotron">
+                <h1>Clean Your Writing</h1>
+                <p class="lead">Good writing is subjective but we can tell you if you're falling into common pitfalls that may make your writing weaker.</p>
+                <p>
+                    <a href="#" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#upload_modal">Upload File</a>
+                    <a href="#" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#paste_modal">Paste Text</a>
+                </p>
+            </div>
 
-            <h3>Upload a Text File</h3>
-            <form class="form-horizontal" role="form" action="/upload" enctype="multipart/form-data" method="post">
-                <div class="form-group">
-                    <label class="col-sm-2 control-label" for="textFile">Select file</label>
-                    <div class="col-sm-10">
-                        <input class="form-control" type="file" name="textFile" />
+            <div class="row marketing">
+                <div class="col-lg-12">
+                    <h2 class="text-center">What we look for</h2>
+                    <p class="text-center">Suggesting writing changes is not an easy job and we don't pretend that we know what perfect writing looks like. We do know that certain elements can weaken writing and make it harder for your readers. With WriteBetter we look for the following items when evaluating writing quality.</p>
+                    <hr />
+                </div>
+
+                <div class="col-lg-6">
+                    <h4>Passive Voice</h4>
+                    <p>Passive voice inverts the logical progression of ideas making those ideas hard to follow, especially when they are complex or technical. Another strike against passive voice is the wordiness that inevitably accompanies it.</p>
+
+                    <h4>Too Wordy Phrases</h4>
+                    <p>It's easy to add filler that hurts your point rather than strengthening it. These wordy phrases hide the true intent of your prose.</p>
+
+                    <h4>Lexical Illusion</h4>
+                    <p>Lexical illusions are hard to spot since our brain can scan text so quickly. By definition it is a repeated word.</p>
+
+                    <h4>Sentence Length</h4>
+                    <p>Long sentences are a quick way to lose a reader.  Sometimes things you want to convey are better said in short bursts.</p>
+                </div>
+
+                <div class="col-lg-6">
+                    <h4>Weasel Words</h4>
+                    <p>Weasel words create an impression that a specific or meaningful statement has been made, when only a vague or ambiguous claim has been communicated, enabling the specific meaning to be denied if the statement is challenged.</p>
+
+                    <h4>Adverbs</h4>
+                    <p>Adverbs are good in moderation but are one of the most overused parts of writing. They are repetitive and dillute the actual verb they are modifying.</p>
+
+                    <h4>Cliches</h4>
+                    <p>Cliches are expressions which have become overused to the point of losing its original meaning or effect, even to the point of being irritating.</p>
+
+                    <h4>Starting Phrases</h4>
+                    <p>Sentence starters should be concise rather than vague.  Phrases such as "there is", "there are", and "so" should be avoided.</p>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>Lovingly crafted by <a href="http://dansackett.me">Dan Sackett</a></p>
+            </footer>
+        </div> <!-- /container -->
+
+        <!-- Paste Modal -->
+        <div class="modal fade" id="paste_modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Paste Text</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" action="/paste" method="post">
+                            <div class="form-group">
+                                <textarea class="form-control" name="textFile" rows="10"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary btn-submit">Process</button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-default">Process</button>
-                    </div>
-                </div>
-            </form>
+            </div>
+        </div>
 
-            <hr />
-
-            <h3>Paste Text In</h3>
-            <form class="form-horizontal" role="form" action="/paste" method="post">
-                <div class="form-group">
-                    <label class="col-sm-2 control-label" for="textFile">Paste a file</label>
-                    <div class="col-sm-10">
-                        <textarea class="form-control" name="textFile"></textarea>
+        <!-- Upload Modal -->
+        <div class="modal fade" id="upload_modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Select File</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" action="/paste" method="post">
+                            <div class="form-group">
+                                <input class="form-control" type="file" name="textFile" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary btn-submit">Process</button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-default">Process</button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="http://getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript">
+            $(document).on('click', '.btn-submit', function(e) {
+                $(this).parent().parent().find('form').submit();
+            });
+        </script>
     </body>
 </html>

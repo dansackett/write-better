@@ -1,10 +1,25 @@
 <html>
     <head>
         <title>Write Better</title>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css">
+        <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css">
         <style>
+            /* Basic Match Styles */
             .match              { text-decoration: none; color: #000; }
             .match:hover        { text-decoration: none; color: #000; cursor: default; }
+
+            /* Legend Colors */
+            .legend-passive       { color: rgba(215, 44, 44, 1) }
+            .legend-weasel        { color: rgba(146, 96, 44, 1) }
+            .legend-wordy         { color: rgba(146, 204, 44, 1) }
+            .legend-adverb        { color: rgba(32, 204, 133, 1) }
+            .legend-cliche        { color: rgba(32, 105, 0, 1) }
+            .legend-illusion      { color: rgba(199, 105, 0, 1) }
+            .legend-length        { color: rgba(199, 142, 37, 1) }
+            .legend-startswith    { color: rgba(255, 0, 37, 1) }
+
+            /* Match Type Styles */
             .type-passive       { background-color: rgba(215, 44, 44, .5) }
             .type-weasel        { background-color: rgba(146, 96, 44, .5) }
             .type-wordy         { background-color: rgba(146, 204, 44, .5) }
@@ -13,20 +28,96 @@
             .type-illusion      { background-color: rgba(199, 105, 0, .5) }
             .type-length        { background-color: rgba(199, 142, 37, .5) }
             .type-startswith    { background-color: rgba(255, 0, 37, .5) }
+
+            /* Other Styles */
+            .list-group-item    { float: left; width: 33%; }
         </style>
     </head>
     <body>
         <div class="container">
-            <h1 class="page-title">
-                Results <small>Results page</small>
-            </h1>
-            <p>These are results</p>
+            <div class="header clearfix">
+                <nav>
+                    <ul class="nav nav-pills pull-right">
+                        <li role="presentation" class="active"><a href="/">Home</a></li>
+                    </ul>
+                </nav>
+                <h3 class="text-muted">Write<strong>Better</strong></h3>
+            </div>
 
-            <hr />
+            <div class="row clearfix">
+                <div class="col-lg-12">
+                    <div class="list-group text-center">
+                        <div class="list-group-item">
+                            <h3 class="list-group-item-heading"><strong class="text-success">{{.score}}</strong></h3>
+                            <p class="list-group-item-text">Score</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h3 class="list-group-item-heading"><strong class="text-success">{{index .summary "paragraphs"}}</strong></h3>
+                            <p class="list-group-item-text">Paragraphs</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h3 class="list-group-item-heading"><strong class="text-success">{{index .summary "sentences"}}</strong></h3>
+                            <p class="list-group-item-text">Sentences</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h3 class="list-group-item-heading"><strong class="text-success">{{index .summary "words"}}</strong></h3>
+                            <p class="list-group-item-text">Words</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h3 class="list-group-item-heading"><strong class="text-success">{{index .summary "characters"}}</strong></h3>
+                            <p class="list-group-item-text">Characters</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h3 class="list-group-item-heading"><strong class="text-success">{{index .summary "letters"}}</strong></h3>
+                            <p class="list-group-item-text">Letters</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <p><strong>Score:</strong> {{.score}}</p>
-            <p class="full-text">{{.fullText}}</p>
-        </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <strong class="legend-cliche"><i class="glyphicon glyphicon-record"></i> Cliche ({{index .matches "cliche"}})</strong>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong class="legend-weasel"><i class="glyphicon glyphicon-record"></i> Weasel Words ({{index .matches "weasel"}})</strong>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong class="legend-wordy"><i class="glyphicon glyphicon-record"></i> Too Wordy ({{index .matches "wordy"}})</strong>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong class="legend-adverb"><i class="glyphicon glyphicon-record"></i> Adverb ({{index .matches "adverb"}})</strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <strong class="legend-passive"><i class="glyphicon glyphicon-record"></i> Passive Phrase ({{index .matches "passive"}})</strong>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong class="legend-illusion"><i class="glyphicon glyphicon-record"></i> Lexical Illusion ({{index .matches "illusion"}})</strong>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong class="legend-length"><i class="glyphicon glyphicon-record"></i> Sentence Length ({{index .matches "length"}})</strong>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong class="legend-startswith"><i class="glyphicon glyphicon-record"></i> Sentence Starter ({{index .matches "startswith"}})</strong>
+                        </div>
+                    </div>
+                    <hr />
+
+                    <p><strong>Estimated Read Time:</strong> {{.readTime}}</p>
+                    {{.fullText}}
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>Lovingly crafted by <a href="http://dansackett.me">Dan Sackett</a></p>
+            </footer>
+        </div> <!-- /container -->
+
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
