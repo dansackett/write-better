@@ -25,6 +25,9 @@ func uploaderHandler(w http.ResponseWriter, req *http.Request) {
 
 	// This is hackish as it replaces a character I am having difficulty with.
 	data = bytes.Replace([]byte(data), []byte("’"), []byte("'"), -1)
+	data = bytes.Replace([]byte(data), []byte("‘"), []byte("'"), -1)
+	data = bytes.Replace([]byte(data), []byte("“"), []byte("\""), -1)
+	data = bytes.Replace([]byte(data), []byte("”"), []byte("\""), -1)
 
 	appText = string(data)
 

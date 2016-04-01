@@ -76,12 +76,12 @@ func (c *CharNode) AddAfter(s string) {
 	c.After = append(c.After, s)
 }
 
-// AnchorTag builds a <span> tag to go before the char (project specific)
-func AnchorTag(procType string, msg string) string {
-	return fmt.Sprintf("<a href=\"#\" data-placement=\"top\" data-toggle=\"tooltip\" title=\"%s\" class=\"match type-%s\">", msg, procType)
+// OpenTag builds a <span> tag to go before the char (project specific)
+func OpenTag(procType string, msg string) string {
+	return fmt.Sprintf("<span data-placement=\"top\" data-toggle=\"tooltip\" title=\"%s\" class=\"match type-%s\">", msg, procType)
 }
 
-// EndAnchorTag builds a <span> tag to go after the char (project specific)
-func EndAnchorTag() string {
-	return fmt.Sprintf("</a>")
+// CloseTag builds a <span> tag to go after the char (project specific)
+func CloseTag() string {
+	return fmt.Sprintf("</span>")
 }

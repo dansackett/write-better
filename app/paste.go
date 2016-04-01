@@ -13,6 +13,9 @@ func pasteHandler(w http.ResponseWriter, req *http.Request) {
 
 	// This is hackish as it replaces a character I am having difficulty with.
 	cleanedData := bytes.Replace([]byte(data), []byte("’"), []byte("'"), -1)
+	cleanedData = bytes.Replace([]byte(cleanedData), []byte("‘"), []byte("'"), -1)
+	cleanedData = bytes.Replace([]byte(cleanedData), []byte("“"), []byte("\""), -1)
+	cleanedData = bytes.Replace([]byte(cleanedData), []byte("”"), []byte("\""), -1)
 
 	appText = string(cleanedData)
 

@@ -25,3 +25,7 @@ _testmain.go
 
 # GOPATH SRC
 src/*
+
+# Scripts
+start
+stop

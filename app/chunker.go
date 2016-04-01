@@ -35,6 +35,8 @@ type Chunk struct {
 	Data string
 	// FirstWord saves the first word of the text for analysis
 	FirstWord string
+	// IsNewParagraph marks when new paragraph delimiters are needed
+	IsNewParagraph bool
 	// Messages store the helpful messages returned from processors
 	Matches []*Match
 	// Score refers to the overall score of this Chunk
@@ -46,11 +48,12 @@ func NewChunk(idx int, data string) *Chunk {
 	var matches []*Match
 
 	return &Chunk{
-		Index:     idx,
-		Data:      data,
-		FirstWord: "",
-		Matches:   matches,
-		Score:     0,
+		Index:          idx,
+		Data:           data,
+		FirstWord:      "",
+		IsNewParagraph: false,
+		Matches:        matches,
+		Score:          0,
 	}
 }
 
@@ -87,18 +90,56 @@ func (c SentenceChunker) Chunk() (Chunks, error) {
 	var result Chunks
 	tmp := make(map[int]*Chunk)
 
+	appSummary = map[string]int{
+		"paragraphs": 0,
+		"sentences":  0,
+		"words":      0,
+		"characters": 0,
+		"letters":    0,
+	}
+
 	s := bufio.NewScanner(bytes.NewBufferString(c.Input))
 
 	index := 0
 	firstWord := ""
 	for s.Scan() {
-		for _, r := range s.Text() {
+		text := s.Text()
+		textLen := len(text)
+		newPara := true
+
+		var prevRune rune
+		for i, r := range text {
+			// Check if we have a new sentence.
 			if tmp[index] == nil {
 				tmp[index] = NewChunk(index, "")
+				appSummary["sentences"] += 1
+
+				// In the case of a new paragraph we add one for the first
+				// word and increase the paragraph count
+				if newPara {
+					tmp[index].IsNewParagraph = true
+					appSummary["paragraphs"] += 1
+					appSummary["words"] += 1
+				}
+
+				newPara = false
 			}
 
+			// Add the current character to the chunk
 			tmp[index].Data += string(r)
 
+			// Increase the number of characters and possibly letters
+			appSummary["characters"] += 1
+			if IsAlpha(r) {
+				appSummary["letters"] += 1
+			}
+
+			// Increase the word count
+			if IsSpace(r) && !IsSpace(prevRune) {
+				appSummary["words"] += 1
+			}
+
+			// Build the first word for easy reference later
 			if tmp[index].FirstWord == "" {
 				if IsAlphaNumeric(r) {
 					firstWord += string(r)
@@ -107,10 +148,18 @@ func (c SentenceChunker) Chunk() (Chunks, error) {
 					firstWord = ""
 				}
 			}
-			if IsEndOfSentence(r) {
-				index += 1
-				continue
+
+			// We move on if we're at the end of the sentence or in the case
+			// that a new paragraph does not have sentence terminators then we
+			// must increase as well to keep paragraphs correct.
+			if IsEndOfSentence(r) || textLen-1 == i {
+				index++
+			} else if textLen-1 == i {
+				appSummary["words"] += 1
+				index++
 			}
+
+			prevRune = r
 		}
 	}
 

@@ -173,15 +173,39 @@ var UseStartsWithProcessor StartsWithProcessor
 
 // Process handles the processing for first phrase matches
 func (_ StartsWithProcessor) Process(c *Chunk) *Chunk {
-	// @TODO Check if it starts with "there is" or "there are"
 	if strings.ToLower(c.FirstWord) == "so" {
-		indices := []int{0, 2}
-		msg := fmt.Sprintf("This sentence starts with so. Consider changing it.")
-		c.Matches = append(c.Matches, NewMatch("", "startswith", indices, msg))
+		msg := fmt.Sprintf("This sentence starts with 'so'. Consider changing it.")
+		c.Matches = append(c.Matches, NewMatch("", "startswith", getStartsWithIndices("s", 2, c), msg))
 		c.Score += 1
+	} else if strings.ToLower(c.FirstWord) == "there" {
+		if strings.HasPrefix(strings.ToLower(c.Data), "there is") {
+			msg := fmt.Sprintf("This sentence starts with 'there is'. Consider changing it.")
+			c.Matches = append(c.Matches, NewMatch("", "startswith", getStartsWithIndices("t", 8, c), msg))
+			c.Score += 1
+		} else if strings.HasPrefix(strings.ToLower(c.Data), "there are") {
+			msg := fmt.Sprintf("This sentence starts with 'there are'. Consider changing it.")
+			c.Matches = append(c.Matches, NewMatch("", "startswith", getStartsWithIndices("t", 9, c), msg))
+			c.Score += 1
+		}
 	}
 
 	return c
+}
+
+// getStartsWithIndices helps find the correct indices for a starting phrase
+// in cases the string begins with quotes or other characters.
+func getStartsWithIndices(str string, strSize int, c *Chunk) []int {
+	if strings.ToLower(string(c.Data[0])) == str {
+		return []int{0, strSize}
+	}
+	firstOcc := 1
+	for i, s := range c.Data {
+		if strings.ToLower(string(s)) == str {
+			firstOcc = i
+			break
+		}
+	}
+	return []int{firstOcc, firstOcc + strSize}
 }
 
 // HTMLProcessor applies HTML tags to the sentence for the frontend
@@ -193,15 +217,16 @@ var UseHTMLProcessor HTMLProcessor
 // Process applies the HTML tags to the string
 func (_ HTMLProcessor) Process(c *Chunk) *Chunk {
 	nodes := ToCharNodes(c.Data)
+	nodesLen := len(nodes)
 
 	if len(c.Matches) > 0 {
 		for _, match := range c.Matches {
 			if len(match.Indices) == 0 {
-				nodes[0].AddBefore(AnchorTag(match.Label, match.Message))
-				nodes[len(nodes)-1].AddAfter(EndAnchorTag())
+				nodes[0].AddBefore(OpenTag(match.Label, match.Message))
+				nodes[nodesLen-1].AddAfter(CloseTag())
 			} else {
-				nodes[match.Indices[0]].AddBefore(AnchorTag(match.Label, match.Message))
-				nodes[match.Indices[1]-1].AddAfter(EndAnchorTag())
+				nodes[match.Indices[0]].AddBefore(OpenTag(match.Label, match.Message))
+				nodes[match.Indices[1]-1].AddAfter(CloseTag())
 			}
 		}
 	}
