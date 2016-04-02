@@ -1,4 +1,4 @@
-FROM golang:1.5
+FROM golang:1.6
 
 ADD app/ /go/src/write-better
 ADD templates/ /go/templates
@@ -9,4 +9,4 @@ RUN go install write-better
 RUN echo "export GOPATH=/etc/gopath" >> /etc/profile
 
 ENTRYPOINT /go/bin/write-better
-EXPOSE 8080
+EXPOSE 17644

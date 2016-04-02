@@ -50,7 +50,7 @@ func resultHandler(w http.ResponseWriter, req *http.Request) {
 		"matches":  matches,
 		"summary":  appSummary,
 		"readTime": GetReadTime(),
-		"fullText": strings.Join(fullText, ""),
+		"fullText": fullText,
 	}
 
 	// Render the template

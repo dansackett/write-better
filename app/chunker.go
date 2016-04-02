@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"strings"
 )
 
 // Match represents an actual matched result after processing
@@ -106,6 +107,9 @@ func (c SentenceChunker) Chunk() (Chunks, error) {
 		text := s.Text()
 		textLen := len(text)
 		newPara := true
+
+		// Clean surrounding whitespace
+		text = strings.TrimSpace(text)
 
 		var prevRune rune
 		for i, r := range text {
