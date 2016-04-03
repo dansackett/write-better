@@ -16,6 +16,7 @@ const AvgReadingSpeed = 275
 func resultHandler(w http.ResponseWriter, req *http.Request) {
 	var score int
 	var fullText []string
+	var curStr bytes.Buffer
 
 	chunks := appResult
 	matches := map[string]int{
@@ -32,15 +33,25 @@ func resultHandler(w http.ResponseWriter, req *http.Request) {
 	sort.Sort(ByChunk(chunks))
 
 	for _, chunk := range chunks {
+		// Build paragraphs
 		if chunk.IsNewParagraph {
-			fullText = append(fullText, "<p>")
+			curStr.WriteString("</p>")
+			fullText = append(fullText, curStr.String())
+
+			curStr.Reset()
+			curStr.WriteString("<p>")
+			curStr.WriteString(chunk.Data)
+		} else {
+			curStr.WriteString(chunk.Data)
 		}
+
+		// Build match sums
 		if len(chunk.Matches) > 0 {
 			for _, match := range chunk.Matches {
 				matches[match.Label] += 1
 			}
 		}
-		fullText = append(fullText, chunk.Data)
+
 		score += chunk.Score
 	}
 
