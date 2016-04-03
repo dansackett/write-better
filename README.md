@@ -4,8 +4,6 @@ Write Better is a Golang application which takes in plaintext or an uploaded
 file and returns a score with a report on how well the piece of text reads.
 The lower the score the better the writing.
 
-**NOTE:** This is in current active development.
-
 ## Working with this project
 
 I've included a Dockerfile to get things started that way. Once you have
@@ -16,7 +14,7 @@ this repo down and build it with:
 
 Once it's written, you can run the application with:
 
-    $ docker run -p 8000:8080 --name wb --rm write-better
+    $ docker run -p 8000:17644 --name wb --rm write-better
 
 The app will be available at `127.0.0.1:8000`. When you're all done with
 things, you can run:
@@ -33,5 +31,5 @@ This will stop the daemon and remove the container.
 - [X] Update processors response to give JS ability to highlight index matches
 - [X] Build text parser to highlight matches
 - [X] Add popovers in frontend for messages with colors matching processor types
-- [ ] Finalize a website design
+- [X] Finalize a website design
 - [ ] Write tests
