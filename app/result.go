@@ -55,6 +55,11 @@ func resultHandler(w http.ResponseWriter, req *http.Request) {
 		score += chunk.Score
 	}
 
+	// Make sure buffer is cleaned out
+	curStr.WriteString("</p>")
+	fullText = append(fullText, curStr.String())
+	curStr.Reset()
+
 	// Build data for the template
 	returnData := map[string]interface{}{
 		"score":    score,
